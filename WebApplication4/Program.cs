@@ -1,12 +1,16 @@
+using jwtIdentityconfig.auth;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using WebApplication4.auth;
 using WebApplication4.Dataccess;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<Googlekey>(builder.Configuration.GetSection("Googlekey"));
 
 builder.Services.AddSingleton<Idata, Dataservice>();
 builder.Services.AddScoped<Gentoken>();
@@ -23,8 +27,10 @@ builder.Services.AddAuthentication(options=>{
                 .AddCookie()
                 .AddGoogle(googleOptions =>
                  {
-                     googleOptions.ClientId = "774911375179-3o4fs80pbhf0toq1ilm5c4ivjg4l9hdd.apps.googleusercontent.com";
-                     googleOptions.ClientSecret = "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";
+                     var auth = builder.Configuration.GetSection("Googlekey").Get<Googlekey>();
+
+                     googleOptions.ClientId = auth.ClientId;
+                     googleOptions.ClientSecret = auth.ClientSecret;
 
                  });
 //.AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters()
